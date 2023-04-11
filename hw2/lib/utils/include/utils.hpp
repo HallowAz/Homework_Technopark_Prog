@@ -109,6 +109,21 @@ private:
     
 };
 
+class Round : public ICalculatable
+{
+
+public:
+    Round(const std::vector<std::string>& vec, const int pos);
+    double Calculate() override;
+    bool HasRightChild() override;
+    void SetRightChild(std::unique_ptr<ICalculatable> node) override;
+    int GetPosOfEnd();
+private: 
+    int pos_of_end_;
+    std::unique_ptr<ICalculatable> expres_;
+    
+};
+
 void parse_arguments(int argc, char** argv, std::vector<std::string>& vec);
 double solve_expression(std::vector<std::string>& vec);
 void add_brackets(std::vector<std::string>& vec);

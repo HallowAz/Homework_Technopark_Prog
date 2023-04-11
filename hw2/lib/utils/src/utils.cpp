@@ -51,11 +51,19 @@ double solve_expression(std::vector<std::string>& vec)
         root = std::make_unique<Number>(brack.Calculate());
             
     }
+
     else if (vec[0] == "floor")
     {
         Floor floorr(vec, 2);
         pos = floorr.GetPosOfEnd();
         root = std::make_unique<Number>(floorr.Calculate());
+    }
+
+    else if (vec[0] == "round")
+    {
+        Round roundd(vec, 2);
+        pos = roundd.GetPosOfEnd();
+        root = std::make_unique<Number>(roundd.Calculate());
     }
 
     else
@@ -101,6 +109,14 @@ double solve_expression(std::vector<std::string>& vec)
             Floor floorr(vec, i + 2);
             i = floorr.GetPosOfEnd();
             std::unique_ptr<ICalculatable> node = std::make_unique<Number>(floorr.Calculate());
+            root.get()->SetRightChild(std::move(node));
+        }
+
+        else if (vec[i] == "round")
+        {
+            Round roundd(vec, i + 2);
+            i = roundd.GetPosOfEnd();
+            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(roundd.Calculate());
             root.get()->SetRightChild(std::move(node));
         }
 
@@ -315,6 +331,51 @@ void Floor::SetRightChild(std::unique_ptr<ICalculatable> node)
 }
 
 int Floor::GetPosOfEnd()
+{
+    return pos_of_end_;
+}
+
+Round::Round(const std::vector<std::string>& vec, const int pos)
+{
+    std::vector<std::string> new_vec;
+    size_t count_of_brackets = 1;
+    for (int i = pos;  count_of_brackets != 0; i++)
+    {
+        if (vec[i][0] == ')')
+        {
+            --count_of_brackets;
+            pos_of_end_ = i;
+        }
+        else if (vec[i][0] == '(')
+            ++count_of_brackets;
+
+        if (count_of_brackets != 0)
+        {
+            new_vec.push_back(vec[i]);
+
+        }
+
+    }
+
+    expres_ = std::make_unique<Number>(solve_expression(new_vec));
+}
+
+double Round::Calculate()
+{
+    return round(expres_.get()->Calculate());
+}
+
+bool Round::HasRightChild()
+{
+    return false;
+}
+
+void Round::SetRightChild(std::unique_ptr<ICalculatable> node)
+{
+    return;
+}
+
+int Round::GetPosOfEnd()
 {
     return pos_of_end_;
 }
