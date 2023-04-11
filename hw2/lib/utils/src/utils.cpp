@@ -51,6 +51,13 @@ double solve_expression(std::vector<std::string>& vec)
         root = std::make_unique<Number>(brack.Calculate());
             
     }
+    else if (vec[0] == "floor")
+    {
+        Floor floorr(vec, 2);
+        pos = floorr.GetPosOfEnd();
+        root = std::make_unique<Number>(floorr.Calculate());
+    }
+
     else
         root = std::make_unique<Number>(std::stod(vec[0]));
     
@@ -88,6 +95,13 @@ double solve_expression(std::vector<std::string>& vec)
             root.get()->SetRightChild(std::move(node));
             //std::cout << "Hello" << std::endl;
             
+        }
+        else if (vec[i] == "floor")
+        {
+            Floor floorr(vec, i + 2);
+            i = floorr.GetPosOfEnd();
+            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(floorr.Calculate());
+            root.get()->SetRightChild(std::move(node));
         }
 
         else
@@ -258,4 +272,49 @@ void add_brackets(std::vector<std::string>& vec)
     
     vec = new_vec;
 
+}
+
+Floor::Floor(const std::vector<std::string>& vec, const int pos)
+{
+    std::vector<std::string> new_vec;
+    size_t count_of_brackets = 1;
+    for (int i = pos;  count_of_brackets != 0; i++)
+    {
+        if (vec[i][0] == ')')
+        {
+            --count_of_brackets;
+            pos_of_end_ = i;
+        }
+        else if (vec[i][0] == '(')
+            ++count_of_brackets;
+
+        if (count_of_brackets != 0)
+        {
+            new_vec.push_back(vec[i]);
+
+        }
+
+    }
+
+    expres_ = std::make_unique<Number>(solve_expression(new_vec));
+}
+
+double Floor::Calculate()
+{
+    return floor(expres_.get()->Calculate());
+}
+
+bool Floor::HasRightChild()
+{
+    return false;
+}
+
+void Floor::SetRightChild(std::unique_ptr<ICalculatable> node)
+{
+    return;
+}
+
+int Floor::GetPosOfEnd()
+{
+    return pos_of_end_;
 }

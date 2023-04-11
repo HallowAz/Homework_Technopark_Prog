@@ -16,6 +16,6 @@ int main(int argc, char** argv)
         std::cout << "Empty expression" << std::endl;
     else
         std::cout << solve_expression(parse_vec) << std::endl;
-
+        
     return 0;
 }
