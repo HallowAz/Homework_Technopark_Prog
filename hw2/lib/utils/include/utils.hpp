@@ -52,21 +52,23 @@ private:
 
 };
 
-// class Bracket: public ICalculatable
-// {
+class Bracket: public ICalculatable
+{
 
-// public:
-//     Bracket(const std::vector<std::string>& vec, const int pos);
-//     double Calculate() override;
-//     bool HasRightChild() override;
-//     void SetRightChild(std::unique_ptr<ICalculatable> node) override;
-//    // void SetLeftChild(std::unique_ptr<ICalculatable> node) override;
-//     // std::unique_ptr<ICalculatable> GetLeftChild() override;
-//     // std::unique_ptr<ICalculatable> GetRightChild() override;
+public:
+    Bracket(const std::vector<std::string>& vec, const int pos);
+    double Calculate() override;
+    bool HasRightChild() override;
+    void SetRightChild(std::unique_ptr<ICalculatable> node);
+    int GetPosOfEnd();
+   // void SetLeftChild(std::unique_ptr<ICalculatable> node) override;
+    // std::unique_ptr<ICalculatable> GetLeftChild() override;
+    // std::unique_ptr<ICalculatable> GetRightChild() override;
 
-// private:
-//     std::unique_ptr<ICalculatable> expres_;
-// };
+private:
+    int pos_of_end_;
+    std::unique_ptr<ICalculatable> expres_;
+};
 
 class Number: public ICalculatable
 {
