@@ -1,6 +1,8 @@
 #include "utils.hpp"
 #include <sstream>
 #include <iostream>
+#include <vector>
+
 
 void parse_arguments(int argc, char** argv, std::vector<std::string>& vec)
 {
@@ -10,6 +12,7 @@ void parse_arguments(int argc, char** argv, std::vector<std::string>& vec)
     while (stream_string >> tok)
         vec.push_back(tok);
 
+    add_brackets(vec);
 }
 
 Plus::Plus(std::unique_ptr<ICalculatable> left, std::unique_ptr<ICalculatable> right)
@@ -65,6 +68,12 @@ double solve_expression(std::vector<std::string>& vec)
         else if (vec[i][0] == '-')
         {
             std::unique_ptr<ICalculatable> node = std::make_unique<Minus>(std::move(root));
+            std::swap(root, node);
+        }
+
+        else if (vec[i][0] == '/')
+        {
+            std::unique_ptr<ICalculatable> node = std::make_unique<Delet>(std::move(root));
             std::swap(root, node);
         }
 
@@ -179,58 +188,74 @@ void Number::SetRightChild(std::unique_ptr<ICalculatable> node)
     return;
 }
 
+Delet::Delet(std::unique_ptr<ICalculatable> left, std::unique_ptr<ICalculatable> right)
+{
+    left_child_ = std::move(left);
+    right_child_ = std::move(right);
+}
 
-// double solve_expression(std::vector<std::string> & vec)
-// {
-//     double res = 0;
+double Delet::Calculate()
+{
+    return left_child_.get()->Calculate() / right_child_.get()->Calculate();
+}
 
-//     for (int i  = 0; i < std::size(vec); i++)
-//     {
-//         ICalculatable* oper;
-//         switch (vec[0][0])
-//         {
-//             case '+':
-                
-//                 break;
-//             case '-':
-//                 Minus oper;
+bool Delet::HasRightChild()
+{
+    return right_child_ != nullptr;
+}
 
-//         }    
-//     }
-// }
+void Delet::SetRightChild(std::unique_ptr<ICalculatable> node)
+{
+    right_child_ = std::move(node);
+}
 
-// Node::Node(std::unique_ptr<ICalculatable> current, std::unique_ptr<ICalculatable> left, std::unique_ptr<ICalculatable> right)
-// {
-//     current_ = std::move(current);
-//     left_ = std::move(left);
-//     right_ = std::move(right);
+void add_brackets_just_number(std::vector<std::string>& vec, std::vector<std::string>& new_vec, const int index_new, const int index_old)
+{
+    if (vec[index_old - 1][0] != ')' && vec[index_old + 1][0] != '(') 
+    {
+        new_vec.insert(new_vec.begin() + index_new - 1, "(");
+        vec.insert(vec.begin() + index_old + 2, ")");
+    }
+
+    else if (vec[index_old - 1][0] == ')' && vec[index_old + 1][0] != '(')
+    {
+        int bracket_index = std::size(new_vec) - 1;
+        for (int bracket_count = 1; bracket_count != 0;)
+        {
+            bracket_index--;
+            if (new_vec[bracket_index][0] == '(')
+                bracket_count--;
+            else if (new_vec[bracket_index][0] == ')')
+                bracket_count++;
+        }
+        if (bracket_index <= 0)
+            new_vec.insert(new_vec.begin(), "(");    
+        else
+            new_vec.insert(new_vec.begin() + bracket_index, "(");
+        vec.insert(vec.begin() + index_old + 2, ")");
+
+    }
+
+}
+
+void add_brackets(std::vector<std::string>& vec)
+{
+    std::vector<std::string> new_vec;
+    for (int i = 0; i < std::size(vec); i++)
+    {
+        if ( vec[i][0] == '/')
+        {
+            add_brackets_just_number(vec, new_vec, std::size(new_vec), i);
+        }
+        
+        new_vec.push_back(vec[i]);
+    }
+
+    for (int i = 0; i < std::size(new_vec); i++)
+    {
+        std::cout << new_vec[i] << std::endl;
+    }
     
-// }
+    vec = new_vec;
 
-// // Node & Node::operator = (Node && orig)
-// // {
-// //     current_ = std::move(orig.current_);
-// //     left_ = std::move(orig.left_);
-// //     right_ = std::move(orig.right_);
-// //     return *this;
-// // }
-
-// Tree::Tree(std::unique_ptr<Node> root)
-// {
-//     root_ = std::move(root);
-// }
-
-// void Tree::Add(std::unique_ptr<Node> node)
-// {
-//     if (root_)
-//     {
-//         root_ = std::make_unique<Node>(node);       
-//         return;
-//     }
-
-    
-//     while (root_.get().
-//     node_ = std::make_unique<Node>(node);
-
-    
-// }
+}
