@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+// Фунция парсит аргументы в вектор строк
 void parse_arguments(int argc, char** argv, std::vector<std::string>& vec)
 {
     std::istringstream stream_string(argv[1]);
@@ -36,6 +37,7 @@ double Minus::Calculate()
     return left_child_.get()->Calculate() - right_child_.get()->Calculate();
 }
 
+// Создаёт корень дерева, в последующем корень выдаст решение 
 std::unique_ptr<ICalculatable> switch_expression_first_elem(std::vector<std::string>& vec, int& pos)
 {
     std::unique_ptr<ICalculatable> root;
@@ -60,6 +62,7 @@ std::unique_ptr<ICalculatable> switch_expression_first_elem(std::vector<std::str
 
 }
 
+// Построение дерева
 double solve_expression(std::vector<std::string>& vec)
 {
     int pos = 0;
@@ -67,7 +70,7 @@ double solve_expression(std::vector<std::string>& vec)
 
     pos++;
 
-    for (int i = pos; i < std::size(vec); i++)
+    for (int i = pos; i < std::size(vec); i++) // Выбор очередного узла
     {
         std::unique_ptr<ICalculatable> node;
 
@@ -133,7 +136,7 @@ Bracket::Bracket(const std::vector<std::string>& vec, const int pos, int& pos_en
     std::vector<std::string> new_vec;
     size_t count_of_brackets = 1;
 
-    for (int i = pos;  count_of_brackets != 0; i++)
+    for (int i = pos;  count_of_brackets != 0; i++) // Правильный подсчёт скобок
     {
         if (vec[i][0] == closed_bracket_sign)
         {
