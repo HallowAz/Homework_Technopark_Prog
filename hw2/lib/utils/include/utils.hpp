@@ -49,13 +49,13 @@ class Bracket: public ICalculatable
 {
 
 public:
-    Bracket(const std::vector<std::string>& vec, const int pos);
+    Bracket(const std::vector<std::string>& vec, const int pos, int& pos_end);
     double Calculate() override;
-    bool HasRightChild() override;
-    void SetRightChild(std::unique_ptr<ICalculatable> node);
     int GetPosOfEnd();
 
 private:
+    bool HasRightChild() override;
+    void SetRightChild(std::unique_ptr<ICalculatable> node);
     int pos_of_end_;
     std::unique_ptr<ICalculatable> expres_;
 };
@@ -72,10 +72,10 @@ public:
         {};
 
     double Calculate() override;
-    bool HasRightChild() override;
-    void SetRightChild(std::unique_ptr<ICalculatable> node) override;
 
 private:
+    bool HasRightChild() override;
+    void SetRightChild(std::unique_ptr<ICalculatable> node) override;
     double numb_;
 };
 
@@ -98,12 +98,13 @@ class Floor : public ICalculatable
 {
 
 public:
-    Floor(const std::vector<std::string>& vec, const int pos);
+    Floor(const std::vector<std::string>& vec, const int pos, int& pos_end);
     double Calculate() override;
+    int GetPosOfEnd();
+
+private: 
     bool HasRightChild() override;
     void SetRightChild(std::unique_ptr<ICalculatable> node) override;
-    int GetPosOfEnd();
-private: 
     int pos_of_end_;
     std::unique_ptr<ICalculatable> expres_;
     
@@ -113,12 +114,13 @@ class Round : public ICalculatable
 {
 
 public:
-    Round(const std::vector<std::string>& vec, const int pos);
+    Round(const std::vector<std::string>& vec, const int pos, int& pos_end);
     double Calculate() override;
-    bool HasRightChild() override;
-    void SetRightChild(std::unique_ptr<ICalculatable> node) override;
     int GetPosOfEnd();
 private: 
+    
+    bool HasRightChild() override;
+    void SetRightChild(std::unique_ptr<ICalculatable> node) override;
     int pos_of_end_;
     std::unique_ptr<ICalculatable> expres_;
     

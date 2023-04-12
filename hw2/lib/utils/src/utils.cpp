@@ -44,42 +44,33 @@ double solve_expression(std::vector<std::string>& vec)
     
     if ( vec[0][0] == '(')
     {
-        Bracket brack(vec, 1);
-            
-        pos = brack.GetPosOfEnd(); 
-             
-        root = std::make_unique<Number>(brack.Calculate());
-            
+        root = std::make_unique<Number>(Bracket(vec, 1, pos).Calculate());
     }
 
     else if (vec[0] == "floor")
     {
-        Floor floorr(vec, 2);
-        pos = floorr.GetPosOfEnd();
-        root = std::make_unique<Number>(floorr.Calculate());
+        root = std::make_unique<Number>(Floor(vec, 1, pos).Calculate());
     }
 
     else if (vec[0] == "round")
     {
-        Round roundd(vec, 2);
-        pos = roundd.GetPosOfEnd();
-        root = std::make_unique<Number>(roundd.Calculate());
+        root = std::make_unique<Number>(Round(vec, 1, pos).Calculate());
     }
 
     else
         root = std::make_unique<Number>(std::stod(vec[0]));
-    
+
     pos++;
 
     for (int i = pos; i < std::size(vec); i++)
     {
-        //std::cout << "Solve" << std::endl;
-      //  std::cout << vec[i] << std::endl;
+
         if (vec[i][0] == '+')
         {
             std::unique_ptr<ICalculatable> node = std::make_unique<Plus>(std::move(root));
             std::swap(root, node);
         }
+
         else if (vec[i][0] == '-')
         {
             std::unique_ptr<ICalculatable> node = std::make_unique<Minus>(std::move(root));
@@ -94,35 +85,24 @@ double solve_expression(std::vector<std::string>& vec)
 
         else if (vec[i][0] == '(')
         {
-            Bracket brack(vec, i + 1);
-            //std::cout << "Hello pos" << std::endl;
-            i = brack.GetPosOfEnd(); 
-            // i = brack.GetPosOfEnd();
-            //std::cout << typename(brack) << std::endl; 
-            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(brack.Calculate());
+            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(Bracket(vec, i + 1, i).Calculate());
             root.get()->SetRightChild(std::move(node));
-            //std::cout << "Hello" << std::endl;
-            
         }
+
         else if (vec[i] == "floor")
         {
-            Floor floorr(vec, i + 2);
-            i = floorr.GetPosOfEnd();
-            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(floorr.Calculate());
+            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(Floor(vec, i + 2, i).Calculate());
             root.get()->SetRightChild(std::move(node));
         }
 
         else if (vec[i] == "round")
         {
-            Round roundd(vec, i + 2);
-            i = roundd.GetPosOfEnd();
-            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(roundd.Calculate());
+            std::unique_ptr<ICalculatable> node = std::make_unique<Number>(Round(vec, i + 2, i).Calculate());
             root.get()->SetRightChild(std::move(node));
         }
 
         else
         {
-            //std::cout << "Hello"  << ' ' << vec[i]<< std::endl;
             std::unique_ptr<ICalculatable> node = std::make_unique<Number>(std::stod(vec[i]));
             root.get()->SetRightChild(std::move(node));
         }
@@ -147,7 +127,7 @@ bool Number::HasRightChild()
 }
 
 
-Bracket::Bracket(const std::vector<std::string>& vec, const int pos)
+Bracket::Bracket(const std::vector<std::string>& vec, const int pos, int& pos_end)
 {
     std::vector<std::string> new_vec;
     size_t count_of_brackets = 1;
@@ -156,7 +136,7 @@ Bracket::Bracket(const std::vector<std::string>& vec, const int pos)
         if (vec[i][0] == ')')
         {
             --count_of_brackets;
-            pos_of_end_ = i;
+            pos_end = i;
         }
         else if (vec[i][0] == '(')
             ++count_of_brackets;
@@ -290,7 +270,7 @@ void add_brackets(std::vector<std::string>& vec)
 
 }
 
-Floor::Floor(const std::vector<std::string>& vec, const int pos)
+Floor::Floor(const std::vector<std::string>& vec, const int pos, int& pos_end)
 {
     std::vector<std::string> new_vec;
     size_t count_of_brackets = 1;
@@ -299,7 +279,7 @@ Floor::Floor(const std::vector<std::string>& vec, const int pos)
         if (vec[i][0] == ')')
         {
             --count_of_brackets;
-            pos_of_end_ = i;
+            pos_end = i;
         }
         else if (vec[i][0] == '(')
             ++count_of_brackets;
@@ -335,7 +315,7 @@ int Floor::GetPosOfEnd()
     return pos_of_end_;
 }
 
-Round::Round(const std::vector<std::string>& vec, const int pos)
+Round::Round(const std::vector<std::string>& vec, const int pos, int& pos_end)
 {
     std::vector<std::string> new_vec;
     size_t count_of_brackets = 1;
@@ -344,7 +324,7 @@ Round::Round(const std::vector<std::string>& vec, const int pos)
         if (vec[i][0] == ')')
         {
             --count_of_brackets;
-            pos_of_end_ = i;
+            pos_end = i;
         }
         else if (vec[i][0] == '(')
             ++count_of_brackets;
